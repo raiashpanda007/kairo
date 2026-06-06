@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package kairo_server;
+
+option go_package = "github.com/raiashpanda007/kairo/kairo_server_protobuffs";
+
+enum ResponseStatus {
+  RESPONSE_STATUS_UNSPECIFIED = 0;
+  OK_STATUS = 1;
+  ERROR_STATUS = 2;
+}
+
+service KairoServer {
+  rpc CreateQueue(CreateQueueRequest) returns (CreateQueueResponse);
+  rpc Enqueue(EnqueueRequest) returns (EnqueueResponse);
+  rpc GetAllQueues(GetAllQueueRequest) returns (GetAllQueueResponse);
+  rpc DeleteQueue(DeleteQueueRequest) returns (DeleteQueueResponse);
+  rpc BulkEnqueue(BulkEnqueueRequest) returns (EnqueueResponse);
+}
+
+message CreateQueueRequest {
+  string queue_name = 1;
+  int32 visibility_timeout = 2;
+  int32 buffer_size_limit = 3;
+}
+
+message CreateQueueResponse {
+  string message = 1;
+  ResponseStatus status = 2;
+}
+
+message EnqueueRequest {
+  string queue_name = 1;
+  string message = 2;
+}
+
+message BulkEnqueueRequest {
+  repeated EnqueueRequest messages = 1;
+}
+
+message EnqueueResponse {
+  string message = 1;
+  ResponseStatus status = 2;
+  string msg_response = 3;
+}
+
+message GetAllQueueRequest {}
+
+message GetAllQueueResponse {
+  repeated QueueMetaData queues = 1;
+}
+
+message QueueMetaData {
+  string queue_name = 1;
+  int32 visibility_timeout = 2;
+  int32 buffer_size_limit = 3;
+}
+
+message DeleteQueueRequest {
+  string queue_name = 1;
+}
+
+message DeleteQueueResponse {
+  string message = 1;
+  ResponseStatus status = 2;
+}
