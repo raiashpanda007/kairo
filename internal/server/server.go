@@ -1,12 +1,17 @@
 package server
 
 import (
-	"net"
-
+	pb "github.com/raiashpanda007/kairo/internal/pb"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"net"
 )
+
+type KairoServerStruct struct {
+	pb.UnimplementedKairoServerServer
+	Logger *zap.Logger
+}
 
 type GRPCServer struct {
 	server *grpc.Server
@@ -15,7 +20,13 @@ type GRPCServer struct {
 }
 
 func New(addr string, logger *zap.Logger) *GRPCServer {
+
 	srv := grpc.NewServer()
+	kairoService := &KairoServerStruct{Logger: logger}
+	pb.RegisterKairoServerServer(
+		srv,
+		kairoService,
+	)
 	reflection.Register(srv)
 
 	return &GRPCServer{
