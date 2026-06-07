@@ -25,7 +25,8 @@ clean:
 
 commit:
 	@msg=$$(copilot -p "Generate a conventional commit message for: $$(git diff --staged)" \
-		| awk '/^```/{f=!f; next} f'); \
+		| awk '/^```/{f=!f; next} f' \
+		| grep -vi '^Co-authored-by:'); \
 	if [ -z "$$msg" ]; then \
 		echo "no commit message generated (is anything staged?)"; \
 		exit 1; \
