@@ -62,7 +62,7 @@ func (s *KairoServerStruct) CreateQueue(ctx context.Context, req *pb.CreateQueue
 		return nil, status.Error(codes.Internal, "unable to save queue config: "+err.Error())
 	}
 
-	// TODO: start the new queue without restarting the server (see queue manager registry).
+	s.QueueManager.StartQueue(ctx, QueueData)
 
 	return &pb.CreateQueueResponse{
 		Message: "queue created successfully",

@@ -1,16 +1,19 @@
 package server
 
 import (
+	"net"
+
+	core_queue "github.com/raiashpanda007/kairo/core/queue"
 	pb "github.com/raiashpanda007/kairo/internal/pb"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"net"
 )
 
 type KairoServerStruct struct {
 	pb.UnimplementedKairoServerServer
-	Logger *zap.Logger
+	Logger       *zap.Logger
+	QueueManager *core_queue.QueueManager
 }
 
 type GRPCServer struct {
@@ -19,10 +22,10 @@ type GRPCServer struct {
 	addr   string
 }
 
-func New(addr string, logger *zap.Logger) *GRPCServer {
+func New(addr string, logger *zap.Logger, queueMananger *core_queue.QueueManager) *GRPCServer {
 
 	srv := grpc.NewServer()
-	kairoService := &KairoServerStruct{Logger: logger}
+	kairoService := &KairoServerStruct{Logger: logger, QueueManager: queueMananger}
 	pb.RegisterKairoServerServer(
 		srv,
 		kairoService,

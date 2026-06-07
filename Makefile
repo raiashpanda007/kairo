@@ -4,7 +4,7 @@ OUT_DIR     := internal/pb
 PROTOC      := protoc
 PROTO_FILES := $(shell find $(PROTO_DIR) -name "*.proto")
 
-.PHONY: proto clean build
+.PHONY: proto clean build commit
 
 proto: $(PROTO_FILES)
 	@mkdir -p $(OUT_DIR)
@@ -22,3 +22,13 @@ build:
 
 clean:
 	rm -rf $(OUT_DIR) bin/
+
+commit:
+	@msg=$$(copilot -p "Generate a conventional commit message for: $$(git diff --staged)" \
+		| awk '/^```/{f=!f; next} f'); \
+	if [ -z "$$msg" ]; then \
+		echo "no commit message generated (is anything staged?)"; \
+		exit 1; \
+	fi; \
+	echo "$$msg"; \
+	git commit -m "$$msg"

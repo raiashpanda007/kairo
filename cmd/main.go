@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"go.uber.org/zap"
 
+	core_queue "github.com/raiashpanda007/kairo/core/queue"
 	"github.com/raiashpanda007/kairo/internal/server"
 	"github.com/raiashpanda007/kairo/shared/config"
 )
@@ -17,7 +19,12 @@ func main() {
 
 	cfg := config.MustLoad()
 
-	srv := server.New(cfg.Server.Addr, logger)
+	ctx := context.Background()
+
+	var QueueManager = core_queue.NewQueueManager(logger)
+	QueueManager.Start(ctx)
+
+	srv := server.New(cfg.Server.Addr, logger, &QueueManager)
 
 	go func() {
 		if err := srv.Run(); err != nil {
