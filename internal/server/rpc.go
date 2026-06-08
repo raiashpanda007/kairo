@@ -75,7 +75,24 @@ func (s *KairoServerStruct) CreateQueue(ctx context.Context, req *pb.CreateQueue
 	}, nil
 }
 
-// func (s *KairoServerStruct) Enqueue(ctx context.Context, req *pb.EnqueueRequest) (*pb.EnqueueResponse, error) {}
+func (s *KairoServerStruct) Enqueue(ctx context.Context, req *pb.EnqueueRequest) (*pb.EnqueueResponse, error) {
+	queueName := req.GetQueueName()
+	message := req.GetMessage()
+	queueChanMap := s.QueueManager.GetQueueMsgChanMap()
+
+	queueChan, ok := queueChanMap[queueName]
+
+	if !ok {
+		return nil, status.Errorf(codes.NotFound, "queue %q not found", queueName)
+	}
+
+	queueChan <- message
+
+	return &pb.EnqueueResponse{
+		Message: "SUCCESSFULLY MESSAGE ENQUEUED",
+		Status:  pb.ResponseStatus_OK_STATUS,
+	}, nil
+}
 
 // func (s *KairoServerStruct) GetAllQueues(ctx context.Context, req *pb.GetAllQueueRequest) (*pb.GetAllQueueResponse, error) {}
 

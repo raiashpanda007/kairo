@@ -43,7 +43,6 @@ message BulkEnqueueRequest {
 message EnqueueResponse {
   string message = 1;
   ResponseStatus status = 2;
-  string msg_response = 3;
 }
 
 message GetAllQueueRequest {}
