@@ -44,6 +44,11 @@ func (qm *QueueManager) Start(ctx context.Context) {
 // TODO: Complete this function
 func (qm *QueueManager) runQueue(ctx context.Context, queueData types.QueueMetaData, queueMsgChan chan string) {
 
+	for {
+		msg := <-queueMsgChan
+
+		qm.logger.Info("Msg logged :: " + msg)
+	}
 }
 
 func (qm *QueueManager) StartQueue(ctx context.Context, queue types.QueueMetaData) {
