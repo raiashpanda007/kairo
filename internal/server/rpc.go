@@ -3,6 +3,8 @@ package server
 import (
 	"context"
 
+	"github.com/google/uuid"
+	core_queue "github.com/raiashpanda007/kairo/core/queue"
 	pb "github.com/raiashpanda007/kairo/internal/pb"
 	"github.com/raiashpanda007/kairo/shared/types"
 	"github.com/raiashpanda007/kairo/shared/utils/fs"
@@ -86,7 +88,9 @@ func (s *KairoServerStruct) Enqueue(ctx context.Context, req *pb.EnqueueRequest)
 		return nil, status.Errorf(codes.NotFound, "queue %q not found", queueName)
 	}
 
-	queueChan <- message
+	msgID := uuid.New().String()
+
+	queueChan <- core_queue.QueueMessage{MsgId: msgID, Message: message}
 
 	return &pb.EnqueueResponse{
 		Message: "SUCCESSFULLY MESSAGE ENQUEUED",
