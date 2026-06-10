@@ -40,20 +40,22 @@ func (qm *QueueManager) Start(ctx context.Context) {
 }
 
 // TODO: Complete this function
-func (qm *QueueManager) runQueue(ctx context.Context, queueData types.QueueMetaData, queueMsgChan chan types.QueueMessage) {
-
+func (qm *QueueManager) runQueue(ctx context.Context, queueData types.QueueMetaData, queueMsgChan chan types.QueueMessage, walMsgChan chan types.QueueMessage) {
 	for {
-		msg := <-queueMsgChan
-		/*
-			TODO: We need that to manage in-memory queue as but before we will save the msg in wal , and then we will push in channel but if our buffer (routine ) is already filled then we will
-			keep a pointer on our wal then whenever channel is empty (this will be another routine that will check constantly the moment channel have some space it will start pushing messages from
-			wal.)
-		*/
+		select {
+		case <-ctx.Done():
+			return
+		case msg := <-queueMsgChan:
+			walMsgChan <- msg
+			/*
+				TODO: We need that to manage in-memory queue as but before we will save the msg in wal , and then we will push in channel but if our buffer (routine ) is already filled then we will
+				keep a pointer on our wal then whenever channel is empty (this will be another routine that will check constantly the moment channel have some space it will start pushing messages from
+				wal.)
+			*/
 
-		// TODO: 1. First create a in memory channel that will keep queueMsgs.
-		// TODO: 2. then push msgs Wal engine channel .
-		// TODO: 3. Then complete WAL engine.
-		qm.logger.Info("Msg logged :: " + msg.Message)
+			// TODO: 1. First create a in memory channel that will keep queueMsgs.
+			// TODO: 2. then push msgs Wal engine channel .
+		}
 	}
 }
 
@@ -67,8 +69,8 @@ func (qm *QueueManager) StartQueue(ctx context.Context, queue types.QueueMetaDat
 
 	walMsgChan := make(chan types.QueueMessage, 10000)
 
-	go core_wal.InitWalEngine(qm.logger, walMsgChan)
-	go qm.runQueue(ctx, queue, queueMsgChannel)
+	go core_wal.InitWalEngine(qm.logger, walMsgChan, queue.Name)
+	go qm.runQueue(ctx, queue, queueMsgChannel, walMsgChan)
 }
 
 func (qm *QueueManager) GetQueueMsgChanMap() map[string]chan types.QueueMessage {

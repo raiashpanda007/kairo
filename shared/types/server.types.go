@@ -9,3 +9,8 @@ type QueueMessage struct {
 	MsgId   string
 	Message string
 }
+
+type WalRecord struct {
+	Message string
+	ID      string
+}

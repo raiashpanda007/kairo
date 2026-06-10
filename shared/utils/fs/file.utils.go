@@ -46,3 +46,27 @@ func WriteJSONFile(path string, fileName string, data any, permCode int32) error
 	return nil
 
 }
+
+func CreateFile(fileName string, path string) (string, error) {
+	ext := filepath.Ext(fileName)
+
+	nameWithoutExt := fileName[:len(fileName)-len(ext)]
+
+	fileDir := filepath.Join(path, nameWithoutExt)
+	if err := os.MkdirAll(fileDir, os.ModePerm); err != nil {
+		return "", err
+	}
+
+	filePath := filepath.Join(fileDir, fileName)
+
+	if _, err := os.Stat(filePath); err == nil {
+		return filePath, nil
+	}
+
+	file, err := os.Create(filePath)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+	return filePath, nil
+}
