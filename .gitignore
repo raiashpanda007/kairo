@@ -1,3 +1,6 @@
 .env
 *.pb.go
 bin/
+core/wal/walFiles/*
+!core/wal/walFiles/Queue_Example/
+queue_config.json

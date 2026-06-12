@@ -10,7 +10,4 @@ type QueueMessage struct {
 	Message string
 }
 
-type WalRecord struct {
-	Message string
-	ID      string
-}
+// CRC| RECORD LEN | ID length| ID | MSG len | MSG

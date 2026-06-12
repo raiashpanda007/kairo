@@ -77,6 +77,7 @@ func (s *KairoServerStruct) CreateQueue(ctx context.Context, req *pb.CreateQueue
 }
 
 func (s *KairoServerStruct) Enqueue(ctx context.Context, req *pb.EnqueueRequest) (*pb.EnqueueResponse, error) {
+	s.Logger.Info("Enqueue Message Requested")
 	queueName := req.GetQueueName()
 	message := req.GetMessage()
 	queueChanMap := s.QueueManager.GetQueueMsgChanMap()
